@@ -123,6 +123,4 @@ Adjust routes and payloads based on the DTOs in `src/**/dto`.
 
 - This repository currently lists its license as `UNLICENSED` in `package.json`. Update as needed.
 
----
 
-If you'd like, I can also add usage examples for each endpoint, create an OpenAPI spec, or add a small Postman collection. Which would you prefer next?
