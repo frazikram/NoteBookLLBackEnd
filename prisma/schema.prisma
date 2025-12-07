@@ -1,0 +1,72 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+
+  notebooks    Notebook[]
+  chatSessions ChatSession[]
+}
+
+model Notebook {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id])
+  notes        Note[]
+  chatSessions ChatSession[] // 👈 add this line
+}
+
+model Note {
+  id         String   @id @default(cuid())
+  notebookId String
+  title      String
+  content    String // full text of the note
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  notebook Notebook @relation(fields: [notebookId], references: [id])
+}
+
+model ChatSession {
+  id         String   @id @default(cuid())
+  userId     String
+  notebookId String? // optional: chat might be global, not tied to a single notebook
+  title      String?
+  createdAt  DateTime @default(now())
+
+  user     User          @relation(fields: [userId], references: [id])
+  notebook Notebook?     @relation(fields: [notebookId], references: [id])
+  messages ChatMessage[]
+}
+
+model ChatMessage {
+  id            String   @id @default(cuid())
+  chatSessionId String
+  role          ChatRole
+  content       String
+  createdAt     DateTime @default(now())
+
+  chatSession ChatSession @relation(fields: [chatSessionId], references: [id])
+}
+
+enum ChatRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
